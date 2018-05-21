@@ -1,113 +1,56 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li>
-        <a
-          href="https://vuejs.org"
-          target="_blank"
-        >
-          Core Docs
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://forum.vuejs.org"
-          target="_blank"
-        >
-          Forum
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://chat.vuejs.org"
-          target="_blank"
-        >
-          Community Chat
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://twitter.com/vuejs"
-          target="_blank"
-        >
-          Twitter
-        </a>
-      </li>
-      <br>
-      <li>
-        <a
-          href="http://vuejs-templates.github.io/webpack/"
-          target="_blank"
-        >
-          Docs for This Template
-        </a>
-      </li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li>
-        <a
-          href="http://router.vuejs.org/"
-          target="_blank"
-        >
-          vue-router
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vuex.vuejs.org/"
-          target="_blank"
-        >
-          vuex
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vue-loader.vuejs.org/"
-          target="_blank"
-        >
-          vue-loader
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-        >
-          awesome-vue
-        </a>
-      </li>
-    </ul>
+  <div>
+    <input type="checkbox" v-model="show">
+    <select v-model="src" style="width: 30em">
+      <option v-for="item in pdfList" :value="item" v-text="item"></option>
+    </select>
+    <input v-model.number="page" type="number" style="width: 5em"> /{{numPages}}
+    <div class="left-block">
+    </div>
+    <div id='pdf'>
+      <div v-if="loadedRatio > 0 && loadedRatio < 1"
+        style="background-color: green; color: white; text-align: center" :style="{ width: loadedRatio * 100 + '%' }">
+        {{ Math.floor(loadedRatio * 100) }}%
+      </div>
+      <pdf v-if="show" ref="pdf" style="border: 1px solid red" :src="src" :page="page" @progress="loadedRatio = $event" @error="error" @num-pages="numPages = $event" @link-clicked="page = $event"></pdf>
+    </div>
+    <div class="right-block">
+      <button class='btn btn-normal'></button>
+    </div>
   </div>
 </template>
 
 <script>
+import pdf from 'vue-pdf';
+
 export default {
-  name: 'HelloWorld',
+  components: {
+    pdf,
+  },
   data() {
     return {
-      msg: 'Welcome to Your Vue.js App',
+      show: true,
+      pdfList: [
+        './static/tracemonkey.pdf',
+        './static/sample.pdf',
+        './static/sample2.pdf',
+      ], src: '',
+      loadedRatio: 0,
+      page: 1,
+      numPages: 0,
     };
+  },
+  methods: {
+    error(err) {
+      console.log(err);
+    },
   },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+<style>
+#pdf {
+  width: 30%;
+  margin: 0 auto;
 }
 </style>
