@@ -5,17 +5,24 @@
       <option v-for="item in pdfList" :value="item" v-text="item"></option>
     </select>
     <input v-model.number="page" type="number" style="width: 5em"> /{{numPages}}
-    <div class="left-block">
-    </div>
-    <div id='pdf'>
-      <div v-if="loadedRatio > 0 && loadedRatio < 1"
-        style="background-color: green; color: white; text-align: center" :style="{ width: loadedRatio * 100 + '%' }">
-        {{ Math.floor(loadedRatio * 100) }}%
+    <div class='container'>
+      <div class='row main'>
+        <div class='col-2'>
+          <button type='button' class='btn btn-light btn-control' v-on:click='prevPage()'>prev button</button>
+        </div>
+
+        <div class='col-8'>
+          <div v-if="loadedRatio > 0 && loadedRatio < 1"
+            style="background-color: green; color: white; text-align: center" :style="{ width: loadedRatio * 100 + '%' }">
+            {{ Math.floor(loadedRatio * 100) }}%
+          </div>
+          <pdf v-if="show" ref="pdf" style="border: 1px solid red width: 30%;" :src="src" :page="page" @progress="loadedRatio = $event" @error="error" @num-pages="numPages = $event" @link-clicked="page = $event"></pdf>
+        </div>
+
+        <div class='col-2'>
+          <button type='button' class='btn btn-light btn-control' v-on:click='nextPage()'>next button</button>
+        </div>
       </div>
-      <pdf v-if="show" ref="pdf" style="border: 1px solid red" :src="src" :page="page" @progress="loadedRatio = $event" @error="error" @num-pages="numPages = $event" @link-clicked="page = $event"></pdf>
-    </div>
-    <div class="right-block">
-      <button class='btn btn-normal'></button>
     </div>
   </div>
 </template>
@@ -34,7 +41,8 @@ export default {
         './static/tracemonkey.pdf',
         './static/sample.pdf',
         './static/sample2.pdf',
-      ], src: '',
+      ],
+      src: '',
       loadedRatio: 0,
       page: 1,
       numPages: 0,
@@ -42,15 +50,25 @@ export default {
   },
   methods: {
     error(err) {
+      // eslint-disable-next-line
       console.log(err);
+    },
+
+    prevPage() {
+      this.page = this.page - 1;
+    },
+
+    nextPage() {
+      this.page = this.page + 1;
     },
   },
 };
 </script>
 
 <style>
-#pdf {
-  width: 30%;
-  margin: 0 auto;
+.main {
+  height: 600px;
+}
+.btn-control {
 }
 </style>
