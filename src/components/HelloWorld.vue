@@ -1,8 +1,15 @@
 <template>
   <div>
-    <select v-model="src" style="width: 30em">
-      <option v-for="item in pdfList" :value="item" v-text="item"></option>
-    </select>
+    <div class="jumbotron">
+      <h2>ファイル詳細</h2>
+      <ul>
+        <li>名前: {{file.name}}</li>
+        <li>サイズ: {{ file.size }} bytes</li>
+        <li>種類: {{file.type}}</li>
+      </ul>
+    </div>
+
+    <input @change="file_change" ref="file" type="file" accept="pdf/*" />
     <input v-model.number="page" type="number" style="width: 5em"> /{{numPages}}
     <div class='container'>
       <div class='row main'>
@@ -46,15 +53,11 @@ export default {
   data() {
     return {
       show: true,
-      pdfList: [
-        './static/tracemonkey.pdf',
-        './static/sample.pdf',
-        './static/sample2.pdf',
-      ],
       src: '',
       loadedRatio: 0,
       page: 1,
       numPages: 0,
+      file: '',
     };
   },
 
@@ -79,17 +82,28 @@ export default {
         this.page = this.page + 1;
       }
     },
+
+    file_change(event) {
+      const elFile = this.$refs.file;
+      this.file = elFile.files[0];
+      console.log(this.file);
+      const url = new FileReader().readAsDataURL(this.file);
+      this.src = url;
+      console.log('file changed: ' + this.src);
+    },
   },
 
-  created: function () {
-    var vm = this;
-    window.addEventListener('keydown', function(event) {
+  created() {
+    const vm = this;
+    window.addEventListener('keydown', () => {
       switch (event.key) {
-        case "ArrowLeft":
+        case 'ArrowLeft':
           vm.prevPage();
           break;
-        case "ArrowRight":
+        case 'ArrowRight':
           vm.nextPage();
+          break;
+        default:
           break;
       }
     });
